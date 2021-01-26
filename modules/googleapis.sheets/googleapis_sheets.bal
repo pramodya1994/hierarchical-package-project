@@ -1,27 +1,27 @@
 import winery.model;
-import ballerinax/googleapis_sheets;
+import ballerinax/googleapis.sheets;
 
 configurable string clientId = ?;
 configurable string clientSecret = ?;
 configurable string refreshToken = ?;
 
-googleapis_sheets:SpreadsheetConfiguration config = {oauth2Config: {
+sheets:SpreadsheetConfiguration config = {oauth2Config: {
         clientId: clientId,
         clientSecret: clientSecret,
-        refreshUrl: googleapis_sheets:REFRESH_URL,
+        refreshUrl: sheets:REFRESH_URL,
         refreshToken: refreshToken
     }};
 
-googleapis_sheets:Client gsheetsClient = checkpanic new (config);
+sheets:Client gsheetsClient = checkpanic new (config);
   
 public function createSpreadsheetAndWriteContent(string spreadsheetName, model:Student[] students) 
 returns string|error? {
-    googleapis_sheets:Spreadsheet spreadsheet = check gsheetsClient->createSpreadsheet(spreadsheetName);
+    sheets:Spreadsheet spreadsheet = check gsheetsClient->createSpreadsheet(spreadsheetName);
     string spreadsheetId = spreadsheet.spreadsheetId;
 
     // get sheet
-    googleapis_sheets:Sheet[] sheets = check spreadsheet.getSheets();
-    googleapis_sheets:Sheet sheet = sheets[0];
+    sheets:Sheet[] sheets = check spreadsheet.getSheets();
+    sheets:Sheet sheet = sheets[0];
 
     // write headings
     _ = check sheet->setCell("A1", "Name");
@@ -41,10 +41,10 @@ returns string|error? {
 }
 
 public function readContent(string spreadsheetId) returns (string|int|float)[][]|error? {
-    googleapis_sheets:Spreadsheet spreadsheet = check gsheetsClient->openSpreadsheetById(spreadsheetId);
+    sheets:Spreadsheet spreadsheet = check gsheetsClient->openSpreadsheetById(spreadsheetId);
 
-    googleapis_sheets:Sheet[] sheets = check spreadsheet.getSheets();
-    googleapis_sheets:Sheet sheet = sheets[0];
+    sheets:Sheet[] sheets = check spreadsheet.getSheets();
+    sheets:Sheet sheet = sheets[0];
 
     (string|int|float)[] columnA = check sheet->getColumn("A");
     (string|int|float)[] columnB = check sheet->getColumn("B");
